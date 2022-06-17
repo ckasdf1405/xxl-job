@@ -10,6 +10,43 @@ $(function() {
 			url: base_url + "/jobinfo/pageListJobInfo",
 			type:"post",
 	        data : function ( d ) {
+
+				var checks = $("#checkeds").val();
+				var checkArray = Array();
+				if (null != checks && checks != "" && checks != undefined) {
+					checkArray = checks.split(",");
+				}
+
+				var checkedsTow = $("#checkedsTow").val();
+				if (null != checkedsTow && checkedsTow != "" && checkedsTow != undefined) {
+					checkArray = checkedsTow.split(",");
+				}
+
+				$("input[name='checkBox1']:checkbox").each(function () {
+					var booble = $(this).is(":checked");
+					var tid=$(this).val();
+					console.log(booble);
+					let index = checkArray.indexOf(tid);
+					if(index==-1){
+						if (booble) {
+							checkArray.push($(this).val());
+						}
+					}else if (index > -1) {
+						if (booble==false) {
+							checkArray.splice(index,1);
+						}
+					}
+
+				});
+				console.log(checkArray.join(','));
+				if (null != checkArray && checkArray != "" && checkArray != undefined) {
+					$("#childJobId").val(checkArray.join(','));
+				}
+
+				$("#checkeds").val(checkArray.join(','));
+				$("#checkedsTow").val(checkArray.join(','));
+				childJobId = $("#childJobId").val();
+
 	        	var obj = {};
                 obj.jobDesc = $('#jobDesc').val();
 	        	obj.executorHandler = $('#executorHandler').val();
@@ -736,17 +773,4 @@ $(function() {
 		$('#addModal').modal({backdrop: false, keyboard: false}).modal('show');
 	});
 
-	//回显原有的值
-	setChoosedValue();
-
 });
-
-//设置默认选项
-function setChoosedValue()
-{
-	var choosedNodeId = $("#childJobId").val();
-
-	$("#job_list").on('load-success.bs.table',function(data){
-		$("#job_list").bootstrapTable("checkBy",{field: "sid", values:[choosedNodeId]});
-	});
-}

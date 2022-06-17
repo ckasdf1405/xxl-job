@@ -38,6 +38,9 @@
 					<button class="btn btn-block btn-info" id="searchBtn">${I18n.system_search}</button>
 				</div>
 				<input type="hidden" id="childJobId" name="childJobId"  value="${childJobId!}">
+				<input type="hidden" name="checkeds" id="checkeds" value=""> <#--设备信息ID-->
+				<input type="hidden" name="checkedsTow" id="checkedsTow" value="${childJobId!}"> <#--设备信息ID-->
+
 			</div>
 
 			<div class="row">
@@ -90,11 +93,33 @@
 
 	//返回选择的结果，用于弹出选择页面
 	function getChoosedtData() {
-		var ids = [];
-		$("input[name='checkBox1']:checked").each(function(i){
-			ids.push($(this).val())
+
+		var checkArray = Array();
+		var checks = $("#childJobId").val();
+		if (null != checks && checks != "" && checks != undefined) {
+			checkArray = checks.split(",");
+		}
+
+		$("input[name='checkBox1']:checkbox").each(function () {
+			var booble = $(this).is(":checked");
+			var tid=$(this).val();
+			console.log(booble);
+			let index = checkArray.indexOf(tid);
+			if(index==-1){
+				if (booble) {
+					checkArray.push($(this).val());
+				}
+			}else if (index > -1) {
+				if (booble==false) {
+					checkArray.splice(index,1);
+				}
+			}
+
 		});
-		return ids;
+
+		$("#childJobId").val(checkArray.join(','));
+		var childJobId = $("#childJobId").val();
+		return childJobId;
 	}
 </script>
 </body>
